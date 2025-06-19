@@ -15,8 +15,8 @@ int main(int argc, char *argv[]) {
         // Read single line from input
         fgets(line, sizeof(line), stdin);
 
-        // Check if command is exit
-        if (!strcmp(line, "exit\n")) {
+        // Check if EOF is reached (Ctrl-D) or command is exit
+        if (feof(stdin) || !strcmp(line, "exit\n")) {
             // Terminate
             printf("Exiting...\n");
             exit(0);
