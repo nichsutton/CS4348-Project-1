@@ -51,8 +51,27 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        // Code for external commands goes here
-        //fork.....
+
+        // parses through the arguments in the line
+        const int MAX_TOKENS = 10; // max arg value specified in project instructions
+        char *args[MAX_TOKENS + 1]; // allocates an array for the arguments with a max of 10 (11 including NULL arg)
+        int i = 0;
+        token = strtok(line, " \n"); // get the initial token from the line
+        while (token != NULL && i < MAX_TOKENS) {
+            args[i] = token; i++;
+            token = strtok(NULL, " \n"); // get all subsequent tokens
+        }
+        args[i] = NULL; // null noken should always be last in arguments for execv to function properly
+
+        // creates a process for the command execution
+        pid_t pid = fork(); 
+        if (pid < 0) {printf("Error in forking.\n"); continue;}
+        // if we are in the child process..
+        else if (pid == 0) {
+            execvp(args[0], args); // execute command if able 
+            errno && printf("Error: Command could not be executed\n"); exit(errno); // return error if not able to execute
+        }
+        else {int status; waitpid(pid, &status, 0);} // parent waits for child process to finish
     }
 
     return 0;
