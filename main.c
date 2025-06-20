@@ -33,13 +33,11 @@ int main(int argc, char *argv[]) {
         }
 
         // Get first token of command
-        char* token = strtok(line, " ");
+        char* token = strtok(line, " \n");
         // Check if first token is "cd"
         if (!strcmp(token, "cd")) {
             // Get second token of command
-            token = strtok(NULL, " ");
-            // Remove \n from end of token
-            token[strlen(token) - 1] = 0;
+            token = strtok(NULL, " \n");
 
             // Attempt changing directory to second token
             if (chdir(token) != 0) {
@@ -55,23 +53,32 @@ int main(int argc, char *argv[]) {
         // parses through the arguments in the line
         const int MAX_TOKENS = 10; // max arg value specified in project instructions
         char *args[MAX_TOKENS + 1]; // allocates an array for the arguments with a max of 10 (11 including NULL arg)
-        int i = 0;
-        token = strtok(line, " \n"); // get the initial token from the line
+        args[0] = token; // we already have the first token so we just put it in the array
+        int i = 1; // Start from the second token
+        // Go until end of tokens or too many tokens
         while (token != NULL && i < MAX_TOKENS) {
-            args[i] = token; i++;
-            token = strtok(NULL, " \n"); // get all subsequent tokens
+            token = strtok(NULL, " \n"); // get next token
+            args[i++] = token;
         }
-        args[i] = NULL; // null noken should always be last in arguments for execv to function properly
+        args[i] = NULL; // null token should always be last in arguments for execvp to function properly
 
         // creates a process for the command execution
         pid_t pid = fork(); 
-        if (pid < 0) {printf("Error in forking.\n"); continue;}
+        if (pid < 0) {
+            printf("Error in forking.\n");
+            continue;
+        }
         // if we are in the child process..
         else if (pid == 0) {
             execvp(args[0], args); // execute command if able 
-            errno && printf("Error: Command could not be executed\n"); exit(errno); // return error if not able to execute
+            errno && printf("Error: Command could not be executed\n");
+            exit(errno); // return error if not able to execute
         }
-        else {int status; waitpid(pid, &status, 0);} // parent waits for child process to finish
+        else {
+            // parent waits for child process to finish
+            int status;
+            waitpid(pid, &status, 0);
+        } 
     }
 
     return 0;

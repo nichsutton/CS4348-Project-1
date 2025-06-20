@@ -15,7 +15,7 @@ To run this program, simply type the following into the same directory as where 
 
 To exit the shell at anytime type the following into its command prompt:
 `exit`
-... or you can you can send an interrupt using `Ctrl + D`.
+... or you can you can send an EOF using `Ctrl + D`.
 
 ### Sources:
 * For using the execvp function: https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/e/execvp.html
